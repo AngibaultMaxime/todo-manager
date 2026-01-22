@@ -1,0 +1,37 @@
+### Variables
+@baseUrl = http://localhost:3000
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsImVtYWlsIjoidXNlcjJAdGVzdC5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc2OTEwNjYzMywiZXhwIjoxNzY5MTA3NTMzfQ.OSginnHzskChdfRqoNiarqV9bO_h8gP5krXfslpa6oc
+
+### Register - Créer un utilisateur
+### IMPORTANT: Changer l'email à chaque exécution pour éviter les conflits d'unicité
+### IMPORTANT: Copier le token d'accès généré dans la réponse dans la variable `@accessToken` pour les tests suivants
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "user2@test.com",
+  "password": "password123",
+  "name": "Test User"
+}
+
+### Register - Créer un admin (à changer en ADMIN manuellement en DB)
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "admin@test.com",
+  "password": "admin123",
+  "name": "Admin User"
+}
+
+### Login
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "user@test.com",
+  "password": "password123"
+}
+
+### Refresh Token
+POST {{baseUrl}}/api/auth/refresh
