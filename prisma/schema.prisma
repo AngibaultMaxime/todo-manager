@@ -1,0 +1,76 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum Status {
+  TODO
+  IN_PROGRESS
+  DONE
+  ARCHIVED
+}
+
+model User {
+  id            Int       @id @default(autoincrement())
+  email         String    @unique
+  password      String
+  name          String
+  role          Role      @default(USER)
+  refreshToken  String?   
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  createdTodos  Todo[]    @relation("CreatedBy")
+  assignedTodos Todo[]    @relation("AssignedTo")
+}
+
+model Category {
+  id            Int       @id @default(autoincrement())
+  name          String    @unique
+  color         String?   // Code couleur hex pour l'UI
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  todos         Todo[]
+}
+
+model Todo {
+  id            Int       @id @default(autoincrement())
+  title         String    
+  description   String?
+  status        Status    @default(TODO)
+  priority      Priority  @default(MEDIUM)
+  dueDate       DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  categoryId    Int?
+  category      Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  createdById   Int
+  createdBy     User      @relation("CreatedBy", fields: [createdById], references: [id])
+
+  assignedToId  Int?
+  assignedTo    User?     @relation("AssignedTo", fields: [assignedToId], references: [id], onDelete: SetNull)
+}
