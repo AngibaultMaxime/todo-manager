@@ -7,7 +7,7 @@ export async function GET(req: NextRequest) {
   try {
     // Vérifier l'authentification
     const authHeader = req.headers.get("authorization");
-    if (!authHeader || authHeader.startsWith("Bearer ")) {
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return new NextResponse("Utilisateur non authentifié", { status: 401 });
     }
 
@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
   try {
     // Vérifier l'authentification
     const authHeader = req.headers.get("authorization");
-    if (!authHeader || authHeader.startsWith("Bearer ")) {
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return new NextResponse("Utilisateur non authentifié", { status: 401 });
     }
 
