@@ -1,0 +1,49 @@
+### Variables
+@baseUrl = http://localhost:3000
+@adminToken = 
+@userToken = 
+
+### Login Admin
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@test.com",
+  "password": "admin123"
+}
+
+### Login User
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "user@test.com",
+  "password": "password123"
+}
+
+### GET tous les todos (USER ou ADMIN)
+GET {{baseUrl}}/api/todos
+Authorization: Bearer {{adminToken}}
+
+### POST créer un todo (ADMIN seulement)
+POST {{baseUrl}}/api/todos
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "title": "Ma première tâche",
+  "description": "Description de test",
+  "priority": "HIGH",
+  "status": "TODO",
+  "dueDate": "2026-02-01T10:00:00Z"
+}
+
+### POST créer un todo avec USER (devrait échouer)
+POST {{baseUrl}}/api/todos
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "title": "Tâche interdite",
+  "priority": "LOW"
+}
