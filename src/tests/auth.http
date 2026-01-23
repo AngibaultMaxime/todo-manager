@@ -1,6 +1,6 @@
 ### Variables
 @baseUrl = http://localhost:3000
-@accessToken = 
+@accessToken = #Copier le token après la requête de register
 
 ### Register - Créer un utilisateur
 ### IMPORTANT: Changer l'email à chaque exécution pour éviter les conflits d'unicité
