@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (error.message === "FORBIDDEN") {
-      return new NextResponse("Accès refusé. Réserver aux administrateurs.", {
+      return new NextResponse("Accès refusé. Réservé aux administrateurs.", {
         status: 403,
       });
     }
