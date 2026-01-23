@@ -25,6 +25,10 @@ Content-Type: application/json
 GET {{baseUrl}}/api/todos
 Authorization: Bearer {{adminToken}}
 
+### GET un todo par ID (USER ou ADMIN)
+GET {{baseUrl}}/api/todos/1
+Authorization: Bearer {{adminToken}}
+
 ### POST créer un todo (ADMIN seulement)
 POST {{baseUrl}}/api/todos
 Authorization: Bearer {{adminToken}}
