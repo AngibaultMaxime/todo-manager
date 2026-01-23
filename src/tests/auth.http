@@ -1,6 +1,6 @@
 ### Variables
 @baseUrl = http://localhost:3000
-@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsImVtYWlsIjoidXNlcjJAdGVzdC5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc2OTEwNjYzMywiZXhwIjoxNzY5MTA3NTMzfQ.OSginnHzskChdfRqoNiarqV9bO_h8gP5krXfslpa6oc
+@accessToken = 
 
 ### Register - Créer un utilisateur
 ### IMPORTANT: Changer l'email à chaque exécution pour éviter les conflits d'unicité
@@ -9,7 +9,7 @@ POST {{baseUrl}}/api/auth/register
 Content-Type: application/json
 
 {
-  "email": "user2@test.com",
+  "email": "user@test.com",
   "password": "password123",
   "name": "Test User"
 }
