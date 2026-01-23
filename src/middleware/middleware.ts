@@ -4,38 +4,23 @@ import { NextRequest, NextResponse } from "next/server";
 export function middleware(req: NextRequest) {
   const authHeader = req.headers.get("authorization");
 
-  // Si pas de token, on laisse passer (route publique)
-  if (!authHeader) {
-    return NextResponse.next();
-  }
-
-  // Token mal formé
-  if (!authHeader.startsWith("Bearer ")) {
+  // Verification de l'authentification
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return NextResponse.json(
-      { error: "Authorization header invalide" },
-      { status: 401 },
+      { error: "Utilisateur non authentifié ou header invalide" },
+      { status: 401 }
     );
   }
 
   try {
-    const token = authHeader.substring(7); // Enlever "Bearer "
-    const payload = verifyAccessToken(token);
-
-    // On injecte l'utilisateur dans la requête
-    const headers = new Headers(req.headers);
-    headers.set("x-user", JSON.stringify(payload));
-
-    return NextResponse.next({
-      request: { headers },
-    });
+    const token = authHeader.substring(7);
+    verifyAccessToken(token); // juste pour valider le token
+    return NextResponse.next(); // token OK → continue
   } catch {
-    return NextResponse.json(
-      { error: "Token invalide ou expiré" },
-      { status: 401 },
-    );
+    return NextResponse.json({ error: "Token invalide ou expiré" }, { status: 401 });
   }
 }
 
 export const config = {
-  matcher: ["/api/todos/:path*"],
+  matcher: ["/api/todos/:path*"], // routes protégées
 };
