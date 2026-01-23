@@ -1,5 +1,4 @@
 import { requireAdmin, requireAuth } from "@/lib/auth";
-import { verifyAccessToken } from "@/lib/jwt";
 import { prisma } from "@/lib/prisma";
 import { createTodoSchema } from "@/schemas/todo.schema";
 import { NextRequest, NextResponse } from "next/server";
