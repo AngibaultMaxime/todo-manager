@@ -1,3 +1,4 @@
+import { requireAdmin, requireAuth } from "@/lib/auth";
 import { verifyAccessToken } from "@/lib/jwt";
 import { prisma } from "@/lib/prisma";
 import { createTodoSchema } from "@/schemas/todo.schema";
@@ -6,18 +7,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(req: NextRequest) {
   try {
     // Vérifier l'authentification
-    const authHeader = req.headers.get("authorization");
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return new NextResponse("Utilisateur non authentifié", { status: 401 });
-    }
-
-    const token = authHeader!.substring(7);
-    let user;
-    try {
-      user = verifyAccessToken(token);
-    } catch (error) {
-      return new NextResponse("Token invalide ou expiré", { status: 401 });
-    }
+    const user = requireAuth(req);
 
     // Récupérer les todos avec les relations
     const todos = await prisma.todo.findMany({
@@ -34,7 +24,11 @@ export async function GET(req: NextRequest) {
     });
 
     return NextResponse.json(todos);
-  } catch (error) {
+  } catch (error: any) {
+    if (error.message === "UNAUTHORIZED") {
+      return new NextResponse("Utilisateur non authentifié", { status: 401 });
+    }
+
     console.error("GET todos error:", error);
     return NextResponse.json(
       { error: "Erreur lors de la récupération des todos" },
@@ -45,27 +39,8 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    // Vérifier l'authentification
-    const authHeader = req.headers.get("authorization");
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return new NextResponse("Utilisateur non authentifié", { status: 401 });
-    }
-
-    // Récuperer l'utilisateur depuis le token
-    const token = authHeader!.substring(7);
-    let user;
-    try {
-      user = verifyAccessToken(token);
-    } catch (error) {
-      return new NextResponse("Token invalide ou expiré", { status: 401 });
-    }
-
     // Seul l'admin peut créer des todos
-    if (user.role !== "ADMIN") {
-      return new NextResponse("Accès refusé, réservé aux administrateurs.", {
-        status: 403,
-      });
-    }
+    const user = requireAdmin(req);
 
     // Validation des données avec Zod
     const body = await req.json();
@@ -92,6 +67,16 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(todo, { status: 201 });
   } catch (error: any) {
+    if (error.message === "UNAUTHORIZED") {
+      return new NextResponse("Utilisateur non authentifié", { status: 401 });
+    }
+
+    if (error.message === "FORBIDDEN") {
+      return new NextResponse("Accès refusé. Réserver aux administrateurs.", {
+        status: 403,
+      });
+    }
+
     if (error.name === "ZodError") {
       return NextResponse.json(
         { error: "Données invalides", details: error.errors },
