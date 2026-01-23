@@ -1,7 +1,7 @@
 ### Variables
 @baseUrl = http://localhost:3000
-@adminToken = 
-@userToken = 
+@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoiYWRtaW5AdGVzdC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NjkyMDUzMTIsImV4cCI6MTc2OTIwNjIxMn0.TXs5bUiXXCG_6nkU4MgKWZdmCcGlowhOHBlowh5u2wg
+@userToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImVtYWlsIjoidXNlckB0ZXN0LmNvbSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzY5MjA1MTU1LCJleHAiOjE3NjkyMDYwNTV9.8E1zGbE0cKrxlrCGQtiLwL07WbpI4ADnKcG1h_f_3E8
 
 ### Login Admin
 POST {{baseUrl}}/api/auth/login
@@ -50,4 +50,14 @@ Content-Type: application/json
 {
   "title": "Tâche interdite",
   "priority": "LOW"
+}
+
+### PATCH mettre à jour un todo (ADMIN seulement)
+PATCH {{baseUrl}}/api/todos/1
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "title": "Tâche mise à jour",
+  "priority": "HIGH"
 }
