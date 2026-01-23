@@ -26,7 +26,10 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(todos);
   } catch (error: any) {
     if (error.message === "UNAUTHORIZED") {
-      return new NextResponse("Utilisateur non authentifié", { status: 401 });
+      return NextResponse.json(
+        { error: "Utilisateur non authentifié" },
+        { status: 401 },
+      );
     }
 
     console.error("GET todos error:", error);
@@ -68,13 +71,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(todo, { status: 201 });
   } catch (error: any) {
     if (error.message === "UNAUTHORIZED") {
-      return new NextResponse("Utilisateur non authentifié", { status: 401 });
+      return NextResponse.json(
+        { error: "Utilisateur non authentifié" },
+        { status: 401 },
+      );
     }
 
     if (error.message === "FORBIDDEN") {
-      return new NextResponse("Accès refusé. Réservé aux administrateurs.", {
-        status: 403,
-      });
+      return NextResponse.json(
+        { error: "Accès refusé. Réservé aux administrateurs." },
+        { status: 403 },
+      );
     }
 
     if (error.name === "ZodError") {
