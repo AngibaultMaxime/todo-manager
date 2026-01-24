@@ -1,0 +1,42 @@
+### Variables
+@baseUrl = http://localhost:3000
+@adminToken =  #Copier le token après la requête de login admin
+@userToken = #Copier le token après la requête de login user
+
+### Login Admin
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@test.com",
+  "password": "admin123"
+}
+
+### Login User
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "user@test.com",
+  "password": "password123"
+}
+
+### GET tous les utilisateurs (ADMIN seulement)
+GET {{baseUrl}}/api/users
+Authorization: Bearer {{adminToken}}
+
+### GET un utilisateur par ID (ADMIN seulement)
+GET {{baseUrl}}/api/users/1
+Authorization: Bearer {{adminToken}}
+
+### GET un utilisateur par ID avec id inexistant (devrait recevoir 404)
+GET {{baseUrl}}/api/users/999
+Authorization: Bearer {{adminToken}}
+
+### GET un utilisateur par ID avec id non numérique (devrait recevoir 400)
+GET {{baseUrl}}/api/users/abc
+Authorization: Bearer {{adminToken}}
+
+### GET un utilisateur par ID avec USER (devrait échouer)
+GET {{baseUrl}}/api/users/1
+Authorization: Bearer {{userToken}}
