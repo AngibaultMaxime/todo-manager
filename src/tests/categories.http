@@ -1,0 +1,64 @@
+### Variables
+@baseUrl = http://localhost:3000
+@adminToken = #Copier le token après la requête de login admin
+@userToken = #Copier le token après la requête de login user
+
+### Login Admin
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@test.com",
+  "password": "admin123"
+}
+
+### Login User
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "user@test.com",
+  "password": "password123"
+}
+
+### GET toutes les catégories (USER ou ADMIN)
+GET {{baseUrl}}/api/categories
+Authorization: Bearer {{adminToken}}
+
+### GET une catégorie par ID (USER ou ADMIN)
+GET {{baseUrl}}/api/categories/1
+Authorization: Bearer {{adminToken}}
+
+### POST créer une catégorie (ADMIN seulement)
+POST {{baseUrl}}/api/categories
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "name": "Travail",
+  "color": "#FF5733"
+}
+
+### POST créer une catégorie avec USER (devrait échouer)
+POST {{baseUrl}}/api/categories
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "name": "Categorie interdite",
+  "color": "#FF0000"
+}
+
+### PATCH modifier une catégorie (ADMIN seulement)
+PATCH {{baseUrl}}/api/categories/1
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "name": "Travail urgent",
+  "color": "#00FF00"
+}
+
+### DELETE une catégorie (ADMIN seulement)
+DELETE {{baseUrl}}/api/categories/1
+Authorization: Bearer {{adminToken}}
