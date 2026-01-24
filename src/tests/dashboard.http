@@ -1,0 +1,16 @@
+### Variables
+@baseUrl = http://localhost:3000
+@adminToken = #Copier le token après la requête de login admin
+
+### Login Admin
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@test.com",
+  "password": "admin123"
+}
+
+### GET Dashboard Stats
+GET {{baseUrl}}/api/dashboard/stats
+Authorization: Bearer {{adminToken}}
