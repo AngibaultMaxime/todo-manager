@@ -1,7 +1,6 @@
 import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
-import { todo } from "node:test";
 
 export async function GET(req: NextRequest) {
   try {
