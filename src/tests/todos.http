@@ -1,6 +1,6 @@
 ### Variables
 @baseUrl = http://localhost:3000
-@adminToken = #Copier le token après la requête de login admin
+@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoiYWRtaW5AdGVzdC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NjkzNzg5MzQsImV4cCI6MTc2OTM3OTgzNH0.8Iq4vi-NCqOnk0FXs9zN7IlY2WA6z13Zj2YFol7Bhxc
 @userToken = #Copier le token après la requête de login user
 
 ### Login Admin
@@ -21,8 +21,16 @@ Content-Type: application/json
   "password": "password123"
 }
 
-### GET tous les todos (USER ou ADMIN)
+### GET tous les todos, sans pagination (USER ou ADMIN)
 GET {{baseUrl}}/api/todos
+Authorization: Bearer {{adminToken}}
+
+### GET tous les todos - Page 1
+GET {{baseUrl}}/api/todos?page=1&limit=5
+Authorization: Bearer {{adminToken}}
+
+### GET tous les todos - Page 2
+GET {{baseUrl}}/api/todos?page=2&limit=5
 Authorization: Bearer {{adminToken}}
 
 ### GET un todo par ID (USER ou ADMIN)

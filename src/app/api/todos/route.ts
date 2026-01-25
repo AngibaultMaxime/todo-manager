@@ -2,14 +2,33 @@ import { requireAdmin, requireAuth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { createTodoSchema } from "@/schemas/todo.schema";
 import { NextRequest, NextResponse } from "next/server";
+import { request } from "node:http";
+import { parse } from "node:path";
 
 export async function GET(req: NextRequest) {
   try {
     // Vérifier l'authentification
     const user = requireAuth(req);
 
-    // Récupérer les todos avec les relations
+    // Récupérer les paramètres de recherche
+    const searchParams = req.nextUrl.searchParams;
+
+    // Pagination (avec valeurs par défaut)
+    let page = parseInt(searchParams.get("page") || "1");
+    let limit = parseInt(searchParams.get("limit") || "10");
+
+    // Validation des paramètres
+    if (page < 1) page = 1;
+    if (limit < 1 || limit > 100) limit = 10;
+
+    // Calcul de l'offset. Utilisé pour savoir où commencer la récupération.
+    // exemple: page 3 avec limit 10 => offset 20 (car on veut sauter les 20 premiers résultats pour afficher la page 3).
+    const skip = (page - 1) * limit;
+
+    // Récupérer les todos avec pagination et les relations
     const todos = await prisma.todo.findMany({
+      skip: skip,   // Saute les 'skip' premiers résultats
+      take: limit,  // Prend les 'limit' résultats suivants
       include: {
         category: true,
         createdBy: {
@@ -22,7 +41,23 @@ export async function GET(req: NextRequest) {
       orderBy: { createdAt: "desc" }, // Plus récent en premier
     });
 
-    return NextResponse.json(todos);
+    // Compter le nombre TOTAL de todos (sans pagination)
+    // Afin de pouvoir calculer le nombre total de pages côté client.
+    const totalItems = await prisma.todo.count();
+    const totalPages = Math.ceil(totalItems / limit); // Arrondi au nombre supérieur
+
+    // Retourner les todos avec les informations de pagination
+    return NextResponse.json({
+      todos,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalItems,
+        itemsPerPage: limit,
+        hasNextPage: page < totalPages,
+        hasPreviousPage: page > 1,
+      },
+    });
   } catch (error: any) {
     if (error.message === "UNAUTHORIZED") {
       return NextResponse.json(
