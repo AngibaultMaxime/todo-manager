@@ -1,6 +1,6 @@
 ### Variables
 @baseUrl = http://localhost:3000
-@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoiYWRtaW5AdGVzdC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NjkzNzg5MzQsImV4cCI6MTc2OTM3OTgzNH0.8Iq4vi-NCqOnk0FXs9zN7IlY2WA6z13Zj2YFol7Bhxc
+@adminToken = #Copier le token après la requête de login admin
 @userToken = #Copier le token après la requête de login user
 
 ### Login Admin
@@ -31,6 +31,29 @@ Authorization: Bearer {{adminToken}}
 
 ### GET tous les todos - Page 2
 GET {{baseUrl}}/api/todos?page=2&limit=5
+Authorization: Bearer {{adminToken}}
+
+### POST pour test suivant
+POST {{baseUrl}}/api/todos
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "title": "Projet urgent à finir",
+  "priority": "HIGH",
+  "categoryId": 2
+}
+
+### Chercher "urgent" (devrait trouver le todo ci-dessus)
+GET {{baseUrl}}/api/todos?search=urgent
+Authorization: Bearer {{adminToken}}
+
+### Filtrer par categoryId
+GET {{baseUrl}}/api/todos?categoryId=2
+Authorization: Bearer {{adminToken}}
+
+### Combiner filtres
+GET {{baseUrl}}/api/todos?status=TODO&priority=HIGH&page=1&limit=5
 Authorization: Bearer {{adminToken}}
 
 ### GET un todo par ID (USER ou ADMIN)

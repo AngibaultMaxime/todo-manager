@@ -2,8 +2,6 @@ import { requireAdmin, requireAuth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { createTodoSchema } from "@/schemas/todo.schema";
 import { NextRequest, NextResponse } from "next/server";
-import { request } from "node:http";
-import { parse } from "node:path";
 
 export async function GET(req: NextRequest) {
   try {
@@ -17,6 +15,39 @@ export async function GET(req: NextRequest) {
     let page = parseInt(searchParams.get("page") || "1");
     let limit = parseInt(searchParams.get("limit") || "10");
 
+    // Filtres
+    const status = searchParams.get("status");
+    const priority = searchParams.get("priority");
+    const categoryId = searchParams.get("categoryId");
+    const assignedToId = searchParams.get("assignedToId");
+    const search = searchParams.get("search");
+
+    // Déclaration dynamique du "where"
+    const where: any = {};
+
+    if (status) {
+      where.status = status;
+    }
+
+    if (priority) {
+      where.priority = priority;
+    }
+
+    if (categoryId) {
+      where.categoryId = parseInt(categoryId);
+    }
+
+    if (assignedToId) {
+      where.assignedToId = parseInt(assignedToId);
+    }
+
+    if (search) {
+      where.OR = [
+        { title: { contains: search, mode: "insensitive" } },
+        { description: { contains: search, mode: "insensitive" } },
+      ];
+    }
+
     // Validation des paramètres
     if (page < 1) page = 1;
     if (limit < 1 || limit > 100) limit = 10;
@@ -27,8 +58,9 @@ export async function GET(req: NextRequest) {
 
     // Récupérer les todos avec pagination et les relations
     const todos = await prisma.todo.findMany({
-      skip: skip,   // Saute les 'skip' premiers résultats
-      take: limit,  // Prend les 'limit' résultats suivants
+      where,
+      skip, // Saute les 'skip' premiers résultats
+      take: limit, // Prend les 'limit' résultats suivants
       include: {
         category: true,
         createdBy: {
@@ -43,7 +75,7 @@ export async function GET(req: NextRequest) {
 
     // Compter le nombre TOTAL de todos (sans pagination)
     // Afin de pouvoir calculer le nombre total de pages côté client.
-    const totalItems = await prisma.todo.count();
+    const totalItems = await prisma.todo.count({ where });
     const totalPages = Math.ceil(totalItems / limit); // Arrondi au nombre supérieur
 
     // Retourner les todos avec les informations de pagination
