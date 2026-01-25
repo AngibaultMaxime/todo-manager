@@ -15,6 +15,14 @@ export async function GET(req: NextRequest) {
     let page = parseInt(searchParams.get("page") || "1");
     let limit = parseInt(searchParams.get("limit") || "10");
 
+    // Validation des paramètres de pagination
+    if (page < 1) page = 1;
+    if (limit < 1 || limit > 100) limit = 10;
+
+    // Calcul de l'offset. Utilisé pour savoir où commencer la récupération.
+    // exemple: page 3 avec limit 10 => offset 20 (car on veut sauter les 20 premiers résultats pour afficher la page 3).
+    const skip = (page - 1) * limit;
+
     // Filtres
     const status = searchParams.get("status");
     const priority = searchParams.get("priority");
@@ -22,7 +30,11 @@ export async function GET(req: NextRequest) {
     const assignedToId = searchParams.get("assignedToId");
     const search = searchParams.get("search");
 
-    // Déclaration dynamique du "where"
+    // Tri
+    const orderByParam = searchParams.get("orderBy") || "createdAt";
+    const order = searchParams.get("order") || "desc";
+
+    // Construction dynamique du "where"
     const where: any = {};
 
     if (status) {
@@ -48,19 +60,34 @@ export async function GET(req: NextRequest) {
       ];
     }
 
-    // Validation des paramètres
-    if (page < 1) page = 1;
-    if (limit < 1 || limit > 100) limit = 10;
+    // Construction dynamique du "orderBy"
+    // Liste des champs autorisés pour le tri
+    const allowedOrderFields = [
+      "createdAt",
+      "updatedAt",
+      "title",
+      "priority",
+      "status",
+      "dueDate",
+    ];
 
-    // Calcul de l'offset. Utilisé pour savoir où commencer la récupération.
-    // exemple: page 3 avec limit 10 => offset 20 (car on veut sauter les 20 premiers résultats pour afficher la page 3).
-    const skip = (page - 1) * limit;
+    // Si le champ n'est pas autorisé, on utilise "createdAt" par défaut
+    const orderByField = allowedOrderFields.includes(orderByParam)
+      ? orderByParam
+      : "createdAt";
+
+    // Valider que order est soit "asc" ou "desc"
+    const orderDirection = order.toLowerCase() === "asc" ? "asc" : "desc";
+
+    // Construire l'objet orderBy pour Prisma
+    const orderBy: any = { [orderByField]: orderDirection };
 
     // Récupérer les todos avec pagination et les relations
     const todos = await prisma.todo.findMany({
       where,
       skip, // Saute les 'skip' premiers résultats
       take: limit, // Prend les 'limit' résultats suivants
+      orderBy,
       include: {
         category: true,
         createdBy: {
@@ -70,7 +97,6 @@ export async function GET(req: NextRequest) {
           select: { id: true, name: true, email: true },
         },
       },
-      orderBy: { createdAt: "desc" }, // Plus récent en premier
     });
 
     // Compter le nombre TOTAL de todos (sans pagination)

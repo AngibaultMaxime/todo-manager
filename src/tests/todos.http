@@ -52,6 +52,22 @@ Authorization: Bearer {{adminToken}}
 GET {{baseUrl}}/api/todos?categoryId=2
 Authorization: Bearer {{adminToken}}
 
+### Trier par date (plus récents)
+GET {{baseUrl}}/api/todos?orderBy=createdAt&order=desc
+Authorization: Bearer {{adminToken}}
+
+### Trier par priorité (croissant, alphabétique)
+GET {{baseUrl}}/api/todos?orderBy=priority&order=asc
+Authorization: Bearer {{adminToken}}
+
+### Trier par titre (alphabétique)
+GET {{baseUrl}}/api/todos?orderBy=title&order=asc
+Authorization: Bearer {{adminToken}}
+
+### Trier par échéance (plus proche)
+GET {{baseUrl}}/api/todos?orderBy=dueDate&order=asc
+Authorization: Bearer {{adminToken}}
+
 ### Combiner filtres
 GET {{baseUrl}}/api/todos?status=TODO&priority=HIGH&page=1&limit=5
 Authorization: Bearer {{adminToken}}
