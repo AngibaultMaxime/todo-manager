@@ -1,6 +1,6 @@
 ### Variables
 @baseUrl = http://localhost:3000
-@adminToken =  #Copier le token après la requête de login admin
+@adminToken = #Copier le token après la requête de login admin
 @userToken = #Copier le token après la requête de login user
 
 ### Login Admin
