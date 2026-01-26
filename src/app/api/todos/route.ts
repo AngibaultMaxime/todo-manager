@@ -16,8 +16,8 @@ export async function GET(req: NextRequest) {
     let limit = parseInt(searchParams.get("limit") || "10");
 
     // Validation des paramètres de pagination
-    if (page < 1) page = 1;
-    if (limit < 1 || limit > 100) limit = 10;
+    if (isNaN(page) || page < 1) page = 1;
+    if (isNaN(limit) || limit < 1 || limit > 100) limit = 10;
 
     // Calcul de l'offset. Utilisé pour savoir où commencer la récupération.
     // exemple: page 3 avec limit 10 => offset 20 (car on veut sauter les 20 premiers résultats pour afficher la page 3).
@@ -46,11 +46,17 @@ export async function GET(req: NextRequest) {
     }
 
     if (categoryId) {
-      where.categoryId = parseInt(categoryId);
+      const parsedCategoryId = parseInt(categoryId);
+      if (!isNaN(parsedCategoryId)) {
+        where.categoryId = parsedCategoryId;
+      }
     }
 
     if (assignedToId) {
-      where.assignedToId = parseInt(assignedToId);
+      const parsedAssignedToId = parseInt(assignedToId);
+      if (!isNaN(parsedAssignedToId)) {
+        where.assignedToId = parsedAssignedToId;
+      }
     }
 
     if (search) {
