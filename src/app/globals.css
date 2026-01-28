@@ -14,8 +14,8 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #ffffff;
+    --foreground: #171717;
   }
 }
 
@@ -23,4 +23,31 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Style global des placeholders */
+input::placeholder,
+textarea::placeholder,
+select::placeholder {
+  color: #4b5563; /* gray-600 */
+  opacity: 1;
+}
+
+/* Style global des inputs, selects et textarea */
+input,
+textarea,
+select {
+  color: #1f2937; /* gray-800 - texte foncé */
+}
+
+/* Option dans les selects */
+select option {
+  color: #1f2937; /* gray-800 */
+}
+
+/* Input disabled (plus clair) */
+input:disabled,
+textarea:disabled,
+select:disabled {
+  color: #9ca3af; /* gray-400 */
 }

@@ -5,7 +5,7 @@ export const createTodoSchema = z.object({
   description: z.string().optional(),
   priority: z.enum(['LOW', 'MEDIUM', 'HIGH']).default('MEDIUM'),
   status: z.enum(['TODO', 'IN_PROGRESS', 'DONE', 'ARCHIVED']).default('TODO'),
-  dueDate: z.string().datetime().optional(),
+  dueDate: z.string().optional().nullable(),
   categoryId: z.number().int().positive().optional(),
   assignedToId: z.number().int().positive().optional(),
 })
@@ -15,7 +15,7 @@ export const updateTodoSchema = z.object({
   description: z.string().optional(),
   priority: z.enum(['LOW', 'MEDIUM', 'HIGH']).optional(),
   status: z.enum(['TODO', 'IN_PROGRESS', 'DONE', 'ARCHIVED']).optional(),
-  dueDate: z.string().datetime().optional().nullable(),
+  dueDate: z.string().optional().nullable(),
   categoryId: z.number().int().positive().optional().nullable(),
   assignedToId: z.number().int().positive().optional().nullable(),
 })
