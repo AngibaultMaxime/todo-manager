@@ -216,6 +216,12 @@ export default function TodosPage() {
                   >
                     Dashboard
                   </Link>
+                  <Link
+                    href="/categories"
+                    className="px-4 py-2 text-sm font-semibold text-blue-600 bg-blue-50 rounded-md hover:bg-blue-100 transition-colors"
+                  >
+                    Catégories
+                  </Link>
                   <button
                     onClick={() => setIsCreateModalOpen(true)}
                     className="px-4 py-2 text-sm font-semibold text-white bg-green-600 rounded-md hover:bg-green-700 transition-colors"
