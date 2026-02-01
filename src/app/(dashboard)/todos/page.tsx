@@ -6,6 +6,7 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import Modal from '@/components/Modal';
 import TodoForm from '@/components/TodoForm';
 import Link from 'next/link';
+import Navbar from '@/components/NavBar';
 
 interface Todo {
   id: number;
@@ -202,53 +203,7 @@ export default function TodosPage() {
     <ProtectedRoute>
       {/* Header */}
       <div className="min-h-screen bg-gray-100">
-        <header className="bg-white shadow-md border-b border-gray-200">
-          <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-            <div className="flex items-center gap-4">
-              <h1 className="text-3xl font-bold text-gray-800">
-                📋 Mes Todos
-              </h1>
-              {isAdmin && (
-                <>
-                  <Link
-                    href="/dashboard"
-                    className="px-4 py-2 text-sm font-semibold text-blue-600 bg-blue-50 rounded-md hover:bg-blue-100 transition-colors"
-                  >
-                    Dashboard
-                  </Link>
-                  <Link
-                    href="/categories"
-                    className="px-4 py-2 text-sm font-semibold text-blue-600 bg-blue-50 rounded-md hover:bg-blue-100 transition-colors"
-                  >
-                    Catégories
-                  </Link>
-                  <button
-                    onClick={() => setIsCreateModalOpen(true)}
-                    className="px-4 py-2 text-sm font-semibold text-white bg-green-600 rounded-md hover:bg-green-700 transition-colors"
-                  >
-                    + Créer un todo
-                  </button>
-                </>
-              )}
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="text-right">
-                <p className="text-sm font-semibold text-gray-800">{user?.name}</p>
-                <p className="text-xs">
-                  <span className={`px-2 py-1 rounded font-bold ${user?.role === 'ADMIN' ? 'bg-purple-600 text-white' : 'bg-blue-600 text-white'}`}>
-                    {user?.role}
-                  </span>
-                </p>
-              </div>
-              <button
-                onClick={logout}
-                className="px-4 py-2 text-sm font-semibold text-white bg-red-600 rounded-md hover:bg-red-700 transition-colors shadow-sm"
-              >
-                Déconnexion
-              </button>
-            </div>
-          </div>
-        </header>
+        <Navbar />
 
         <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
           {isLoading ? (
