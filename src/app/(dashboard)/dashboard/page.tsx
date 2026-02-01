@@ -148,47 +148,53 @@ export default function DashboardPage() {
             <div className="space-y-6">
               {/* Cards des totaux */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-600">
-                        Total Todos
-                      </p>
-                      <p className="text-3xl font-bold text-gray-900">
-                        {stats.totals.todos}
-                      </p>
+                <Link href="/todos" className="block">
+                  <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500 hover:shadow-lg transition-shadow cursor-pointer">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-gray-600">
+                          Total Todos
+                        </p>
+                        <p className="text-3xl font-bold text-gray-900">
+                          {stats.totals.todos}
+                        </p>
+                      </div>
+                      <div className="text-4xl">📝</div>
                     </div>
-                    <div className="text-4xl">📝</div>
                   </div>
-                </div>
+                </Link>
 
-                <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-green-500">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-600">
-                        Utilisateurs
-                      </p>
-                      <p className="text-3xl font-bold text-gray-900">
-                        {stats.totals.users}
-                      </p>
+                <Link href="/users" className="block">
+                  <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-green-500 hover:shadow-lg transition-shadow cursor-pointer">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-gray-600">
+                          Utilisateurs
+                        </p>
+                        <p className="text-3xl font-bold text-gray-900">
+                          {stats.totals.users}
+                        </p>
+                      </div>
+                      <div className="text-4xl">👥</div>
                     </div>
-                    <div className="text-4xl">👥</div>
                   </div>
-                </div>
+                </Link>
 
-                <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-purple-500">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-600">
-                        Catégories
-                      </p>
-                      <p className="text-3xl font-bold text-gray-900">
-                        {stats.totals.categories}
-                      </p>
+                <Link href="/categories" className="block">
+                  <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-purple-500 hover:shadow-lg transition-shadow cursor-pointer">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-gray-600">
+                          Catégories
+                        </p>
+                        <p className="text-3xl font-bold text-gray-900">
+                          {stats.totals.categories}
+                        </p>
+                      </div>
+                      <div className="text-4xl">🏷️</div>
                     </div>
-                    <div className="text-4xl">🏷️</div>
                   </div>
-                </div>
+                </Link>
               </div>
 
               {/* Todos par statut */}
