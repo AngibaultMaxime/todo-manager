@@ -3,8 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import ProtectedRoute from '@/components/ProtectedRoute';
-import Link from 'next/link';
-import Navbar from '@/components/NavBar';
+import Navbar from '@/components/Navbar';
 
 interface User {
   id: number;
@@ -47,10 +46,55 @@ export default function UsersPage() {
     }
   };
 
+  // Modifier le rôle d'un utilisateur
+  const handleRoleChange = async (userId: number, newRole: string) => {
+    if (!confirm(`Êtes-vous sûr de changer le rôle en ${newRole} ?`)) return;
+
+    try {
+      const response = await fetch(`/api/users/${userId}`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ role: newRole }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Erreur lors de la modification');
+      }
+
+      await fetchUsers(); // Rafraîchir la liste
+    } catch (err: any) {
+      alert(err.message);
+    }
+  };
+
+  // Supprimer un utilisateur
+  const handleDelete = async (userId: number, userName: string) => {
+    if (!confirm(`Êtes-vous sûr de vouloir supprimer "${userName}" ? Cette action est irréversible.`)) return;
+
+    try {
+      const response = await fetch(`/api/users/${userId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${accessToken}` },
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Erreur lors de la suppression');
+      }
+
+      await fetchUsers(); // Rafraîchir la liste
+    } catch (err: any) {
+      alert(err.message);
+    }
+  };
+
   return (
     <ProtectedRoute requireAdmin>
       <div className="min-h-screen bg-gray-100">
-        {/* Header */}
         <Navbar />
 
         {/* Content */}
@@ -91,38 +135,72 @@ export default function UsersPage() {
                       <th className="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase">Email</th>
                       <th className="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase">Rôle</th>
                       <th className="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase">Date d'inscription</th>
+                      <th className="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200">
-                    {users.map((u) => (
-                      <tr key={u.id} className="hover:bg-gray-50 transition-colors">
-                        <td className="px-6 py-4 text-sm font-mono text-gray-500">#{u.id}</td>
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-3">
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm ${u.role === 'ADMIN' ? 'bg-purple-600' : 'bg-blue-600'}`}>
-                              {u.name.charAt(0).toUpperCase()}
+                    {users.map((u) => {
+                      const isCurrentUser = u.id === user?.id;
+
+                      return (
+                        <tr key={u.id} className="hover:bg-gray-50 transition-colors">
+                          <td className="px-6 py-4 text-sm font-mono text-gray-500">#{u.id}</td>
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-3">
+                              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm ${u.role === 'ADMIN' ? 'bg-purple-600' : 'bg-blue-600'}`}>
+                                {u.name.charAt(0).toUpperCase()}
+                              </div>
+                              <span className="text-sm font-semibold text-gray-900">{u.name}</span>
+                              {isCurrentUser && (
+                                <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded font-semibold">Vous</span>
+                              )}
                             </div>
-                            <span className="text-sm font-semibold text-gray-900">{u.name}</span>
-                            {u.id === user?.id && (
-                              <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded font-semibold">Vous</span>
+                          </td>
+                          <td className="px-6 py-4 text-sm text-gray-600">{u.email}</td>
+                          <td className="px-6 py-4">
+                            {isCurrentUser ? (
+                              // Pas de select pour soi-même
+                              <span className="px-3 py-1 text-xs font-bold rounded bg-purple-600 text-white">
+                                👑 ADMIN
+                              </span>
+                            ) : (
+                              // Select pour changer le rôle
+                              <select
+                                value={u.role}
+                                onChange={(e) => handleRoleChange(u.id, e.target.value)}
+                                className="px-3 py-1 text-xs font-bold rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                                style={{
+                                  backgroundColor: u.role === 'ADMIN' ? '#7c3aed' : '#2563eb',
+                                  color: 'white',
+                                }}
+                              >
+                                <option value="ADMIN" style={{ color: '#1f2937' }}>👑 ADMIN</option>
+                                <option value="USER" style={{ color: '#1f2937' }}>👤 USER</option>
+                              </select>
                             )}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 text-sm text-gray-600">{u.email}</td>
-                        <td className="px-6 py-4">
-                          <span className={`px-3 py-1 text-xs font-bold rounded ${u.role === 'ADMIN' ? 'bg-purple-600 text-white' : 'bg-blue-600 text-white'}`}>
-                            {u.role === 'ADMIN' ? '👑 ADMIN' : '👤 USER'}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 text-sm text-gray-600">
-                          {new Date(u.createdAt).toLocaleDateString('fr-FR', {
-                            day: 'numeric',
-                            month: 'long',
-                            year: 'numeric',
-                          })}
-                        </td>
-                      </tr>
-                    ))}
+                          </td>
+                          <td className="px-6 py-4 text-sm text-gray-600">
+                            {new Date(u.createdAt).toLocaleDateString('fr-FR', {
+                              day: 'numeric',
+                              month: 'long',
+                              year: 'numeric',
+                            })}
+                          </td>
+                          <td className="px-6 py-4">
+                            {isCurrentUser ? (
+                              <span className="text-xs text-gray-400 italic">Vous ne pouvez pas vous supprimer</span>
+                            ) : (
+                              <button
+                                onClick={() => handleDelete(u.id, u.name)}
+                                className="px-3 py-1 text-sm font-semibold text-red-600 bg-red-50 rounded hover:bg-red-100 transition-colors"
+                              >
+                                🗑️ Supprimer
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>

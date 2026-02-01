@@ -6,7 +6,7 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import Modal from '@/components/Modal';
 import CategoryForm from '@/components/CategoryForm';
 import Link from 'next/link';
-import Navbar from '@/components/NavBar';
+import Navbar from '@/components/Navbar';
 
 interface Category {
   id: number;

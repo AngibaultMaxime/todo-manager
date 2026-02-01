@@ -6,7 +6,7 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import Modal from '@/components/Modal';
 import TodoForm from '@/components/TodoForm';
 import Link from 'next/link';
-import Navbar from '@/components/NavBar';
+import Navbar from '@/components/Navbar';
 
 interface Todo {
   id: number;

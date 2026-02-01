@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Link from "next/link";
-import Navbar from "@/components/NavBar";
+import Navbar from "@/components/Navbar";
 
 interface DashboardStats {
   totals: {
