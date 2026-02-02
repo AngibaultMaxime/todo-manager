@@ -5,6 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
+import { getPriorityColor, getStatusColor } from "@/lib/utils";
 
 interface DashboardStats {
   totals: {
@@ -57,34 +58,6 @@ export default function DashboardPage() {
       setError(err.message);
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "TODO":
-        return "bg-gray-500 text-white";
-      case "IN_PROGRESS":
-        return "bg-blue-500 text-white";
-      case "DONE":
-        return "bg-green-500 text-white";
-      case "ARCHIVED":
-        return "bg-gray-700 text-white";
-      default:
-        return "bg-gray-500 text-white";
-    }
-  };
-
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case "HIGH":
-        return "bg-red-500 text-white";
-      case "MEDIUM":
-        return "bg-yellow-500 text-black";
-      case "LOW":
-        return "bg-green-500 text-white";
-      default:
-        return "bg-gray-500 text-white";
     }
   };
 
