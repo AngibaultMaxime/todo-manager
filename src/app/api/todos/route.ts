@@ -28,6 +28,7 @@ export async function GET(req: NextRequest) {
     const priority = searchParams.get("priority");
     const categoryId = searchParams.get("categoryId");
     const assignedToId = searchParams.get("assignedToId");
+    const excludeAssignedToId = searchParams.get("excludeAssignedToId");
     const search = searchParams.get("search");
 
     // Tri
@@ -56,6 +57,22 @@ export async function GET(req: NextRequest) {
       const parsedAssignedToId = parseInt(assignedToId);
       if (!isNaN(parsedAssignedToId)) {
         where.assignedToId = parsedAssignedToId;
+      }
+    }
+
+    if (excludeAssignedToId) {
+      const parsedExcludeAssignedToId = parseInt(excludeAssignedToId);
+      if (!isNaN(parsedExcludeAssignedToId)) {
+        // Exclut les todos assignés à cet utilisateur
+        where.AND = [
+          ...(where.AND || []),
+          {
+            OR: [
+              { assignedToId: { not: parsedExcludeAssignedToId } }, // tous sauf moi
+              { assignedToId: null }, // ou non assignées
+            ],
+          },
+        ];
       }
     }
 

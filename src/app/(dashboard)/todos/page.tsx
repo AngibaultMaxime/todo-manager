@@ -31,7 +31,8 @@ interface User {
 }
 
 export default function TodosPage() {
-  const [todos, setTodos] = useState<Todo[]>([]);
+  const [allTodos, setAllTodos] = useState<Todo[]>([]);
+  const [myTodos, setMyTodos] = useState<Todo[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -57,12 +58,42 @@ export default function TodosPage() {
     }
   }, [isAdmin]);
 
-  // Relancer fetchTodos quand les filtres changent
+  // Relancer fetchAllTodos quand les filtres changent
   useEffect(() => {
-    fetchTodos();
+    fetchAllTodos();
   }, [search, statusFilter, priorityFilter, categoryFilter]);
 
-  const fetchTodos = async () => {
+  useEffect(() => {
+  fetchMyTodos();
+}, [user, search, statusFilter, priorityFilter, categoryFilter]);
+
+  // Mes Todos qui me sont assignés
+  const fetchMyTodos = async () => {
+  if (!user) return;
+
+  try {
+    const params = new URLSearchParams();
+    params.append("assignedToId", user.id.toString());
+    if (search) params.append("search", search);
+    if (statusFilter) params.append("status", statusFilter);
+    if (priorityFilter) params.append("priority", priorityFilter);
+    if (categoryFilter) params.append("categoryId", categoryFilter);
+
+    const response = await fetch(`/api/todos?${params.toString()}`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+
+    if (!response.ok) return;
+
+    const data = await response.json();
+    setMyTodos(data.todos);
+  } catch (err: any) {
+    console.error("Erreur fetchMyTodos:", err);
+  }
+};
+
+  // Tous les Todos sauf ceux de l'utilisateur
+  const fetchAllTodos = async () => {
     try {
       // Construire les paramètres de requête
       const params = new URLSearchParams();
@@ -70,6 +101,9 @@ export default function TodosPage() {
       if (statusFilter) params.append("status", statusFilter);
       if (priorityFilter) params.append("priority", priorityFilter);
       if (categoryFilter) params.append("categoryId", categoryFilter);
+
+      // On exclue les todos assignées à l'utilisateur courant
+      if (user) params.append("excludeAssignedToId", user.id.toString());
 
       const response = await fetch(`/api/todos?${params.toString()}`, {
         headers: { Authorization: `Bearer ${accessToken}` },
@@ -84,7 +118,7 @@ export default function TodosPage() {
         throw new Error("Erreur lors de la récupération des todos");
 
       const data = await response.json();
-      setTodos(data.todos);
+      setAllTodos(data.todos);
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -144,7 +178,7 @@ export default function TodosPage() {
 
       if (!response.ok) throw new Error("Erreur lors de la création");
 
-      await fetchTodos();
+      await fetchAllTodos();
       setIsCreateModalOpen(false);
     } catch (err: any) {
       alert(err.message);
@@ -172,7 +206,7 @@ export default function TodosPage() {
 
       if (!response.ok) throw new Error("Erreur lors de la modification");
 
-      await fetchTodos();
+      await fetchAllTodos();
       setIsEditModalOpen(false);
       setEditingTodo(null);
     } catch (err: any) {
@@ -193,7 +227,7 @@ export default function TodosPage() {
 
       if (!response.ok) throw new Error("Erreur lors de la suppression");
 
-      await fetchTodos();
+      await fetchAllTodos();
     } catch (err: any) {
       alert(err.message);
     }
@@ -322,6 +356,106 @@ export default function TodosPage() {
         </div>
 
         <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+          {/* MES TÂCHES */}
+          {myTodos.length > 0 && (
+            <section className="max-w-7xl mx-auto mb-8">
+              <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+                👤 Mes tâches assignées
+                <span className="text-sm bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">
+                  {myTodos.length}
+                </span>
+              </h2>
+
+              <div className="bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200">
+                <ul className="divide-y divide-gray-200">
+                  {myTodos.map((todo) => (
+                    <li
+                      key={todo.id}
+                      className="px-6 py-5 hover:bg-gray-50 transition-colors"
+                    >
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 flex-wrap">
+                            <h3 className="text-lg font-semibold text-gray-900">
+                              {todo.title}
+                            </h3>
+                            <span className="text-gray-400 font-bold">•</span>
+                            <span
+                              className={`px-3 py-1 text-xs font-bold rounded ${getStatusColor(
+                                todo.status,
+                              )}`}
+                            >
+                              {todo.status.replace("_", " ")}
+                            </span>
+                            <span
+                              className={`px-3 py-1 text-xs font-bold rounded ${getPriorityColor(
+                                todo.priority,
+                              )}`}
+                            >
+                              {todo.priority}
+                            </span>
+                          </div>
+                          {todo.description && (
+                            <p className="mt-2 text-sm text-gray-700 leading-relaxed">
+                              {todo.description}
+                            </p>
+                          )}
+                          <div className="mt-3 flex items-center gap-4 text-sm text-gray-600 flex-wrap">
+                            {todo.category && (
+                              <span className="flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full">
+                                {todo.category.color && (
+                                  <span
+                                    className="w-3 h-3 rounded-full border border-gray-300"
+                                    style={{
+                                      backgroundColor: todo.category.color,
+                                    }}
+                                  />
+                                )}
+                                <span className="font-medium text-gray-800">
+                                  {todo.category.name}
+                                </span>
+                              </span>
+                            )}
+                            {todo.assignedTo && (
+                              <span className="bg-blue-50 px-3 py-1 rounded-full text-blue-800 font-medium">
+                                👤 {todo.assignedTo.name}
+                              </span>
+                            )}
+                            {todo.dueDate && (
+                              <span className="bg-amber-50 px-3 py-1 rounded-full text-amber-800 font-medium">
+                                📅{" "}
+                                {new Date(todo.dueDate).toLocaleDateString(
+                                  "fr-FR",
+                                )}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        {/* Si admin, bouton modifier/supprimer */}
+                        {isAdmin && (
+                          <div className="flex gap-2 ml-4">
+                            <button
+                              onClick={() => openEditModal(todo)}
+                              className="px-3 py-1 text-sm font-semibold text-blue-600 bg-blue-50 rounded hover:bg-blue-100"
+                            >
+                              ✏️ Modifier
+                            </button>
+                            <button
+                              onClick={() => handleDelete(todo.id)}
+                              className="px-3 py-1 text-sm font-semibold text-red-600 bg-red-50 rounded hover:bg-red-100"
+                            >
+                              🗑️ Supprimer
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </section>
+          )}
+          {/* TOUTES LES TÂCHES */}
           {isLoading ? (
             <div className="text-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
@@ -333,24 +467,16 @@ export default function TodosPage() {
             <div className="bg-red-50 border-2 border-red-300 rounded-lg p-4">
               <p className="text-red-900 font-semibold">{error}</p>
             </div>
-          ) : todos.length === 0 ? (
+          ) : allTodos.length === 0 ? (
             <div className="bg-white rounded-lg shadow p-12 text-center">
               <p className="text-gray-600 text-lg font-medium">
-                📝 Aucun todo pour le moment
+                📝 Aucun todo
               </p>
-              {isAdmin && (
-                <button
-                  onClick={() => setIsCreateModalOpen(true)}
-                  className="mt-4 px-6 py-3 text-sm font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700"
-                >
-                  Créer le premier todo
-                </button>
-              )}
             </div>
           ) : (
             <div className="bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200">
               <ul className="divide-y divide-gray-200">
-                {todos.map((todo) => (
+                {allTodos.map((todo) => (
                   <li
                     key={todo.id}
                     className="px-6 py-5 hover:bg-gray-50 transition-colors"
