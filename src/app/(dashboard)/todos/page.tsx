@@ -67,8 +67,8 @@ export default function TodosPage() {
 
   // Charger catégories et users au démarrage
   useEffect(() => {
+    fetchCategories();
     if (isAdmin) {
-      fetchCategories();
       fetchUsers();
     }
   }, [isAdmin]);
