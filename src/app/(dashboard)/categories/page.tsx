@@ -136,54 +136,61 @@ export default function CategoriesPage() {
             <div className="bg-red-50 border-2 border-red-300 rounded-lg p-4">
               <p className="text-red-900 font-semibold">{error}</p>
             </div>
-          ) : categories.length === 0 ? (
-            <div className="bg-white rounded-lg shadow p-12 text-center">
-              <p className="text-gray-600 text-lg font-medium">🏷️ Aucune catégorie pour le moment</p>
-              <button
-                onClick={() => setIsCreateModalOpen(true)}
-                className="mt-4 px-6 py-3 text-sm font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700"
-              >
-                Créer la première catégorie
-              </button>
-            </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {categories.map((category) => (
-                <div
-                  key={category.id}
-                  className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow border-l-4"
-                  style={{ borderLeftColor: category.color || '#6B7280' }}
-                >
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-3 flex-1">
-                      <div
-                        className="w-8 h-8 rounded-full border-2 border-gray-300"
-                        style={{ backgroundColor: category.color || '#6B7280' }}
-                      />
-                      <div>
-                        <h3 className="text-lg font-bold text-gray-900">{category.name}</h3>
-                        <p className="text-xs text-gray-500 font-mono">ID: {category.id}</p>
+            <>
+              {/* Card + pour créer une nouvelle catégorie */}
+              <div
+                onClick={() => setIsCreateModalOpen(true)}
+                className="flex items-center justify-center cursor-pointer bg-white rounded-lg shadow-md border border-gray-200 p-6 mb-6 hover:bg-blue-50 hover:shadow-lg transition-all"
+              >
+                <div className="text-4xl">➕</div>
+                <p className="ml-4 font-semibold text-gray-700">Créer une nouvelle catégorie</p>
+              </div>
+
+              {categories.length === 0 ? (
+                <div className="bg-white rounded-lg shadow p-12 text-center">
+                  <p className="text-gray-600 text-lg font-medium">🏷️ Aucune catégorie pour le moment</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {categories.map((category) => (
+                    <div
+                      key={category.id}
+                      className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow border-l-4"
+                      style={{ borderLeftColor: category.color || '#6B7280' }}
+                    >
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-center gap-3 flex-1">
+                          <div
+                            className="w-8 h-8 rounded-full border-2 border-gray-300"
+                            style={{ backgroundColor: category.color || '#6B7280' }}
+                          />
+                          <div>
+                            <h3 className="text-lg font-bold text-gray-900">{category.name}</h3>
+                            <p className="text-xs text-gray-500 font-mono">ID: {category.id}</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="mt-4 flex gap-2">
+                        <button
+                          onClick={() => openEditModal(category)}
+                          className="flex-1 px-3 py-2 text-sm font-semibold text-blue-600 bg-blue-50 rounded hover:bg-blue-100 transition-colors"
+                        >
+                          ✏️ Modifier
+                        </button>
+                        <button
+                          onClick={() => handleDelete(category.id)}
+                          className="flex-1 px-3 py-2 text-sm font-semibold text-red-600 bg-red-50 rounded hover:bg-red-100 transition-colors"
+                        >
+                          🗑️ Supprimer
+                        </button>
                       </div>
                     </div>
-                  </div>
-
-                  <div className="mt-4 flex gap-2">
-                    <button
-                      onClick={() => openEditModal(category)}
-                      className="flex-1 px-3 py-2 text-sm font-semibold text-blue-600 bg-blue-50 rounded hover:bg-blue-100 transition-colors"
-                    >
-                      ✏️ Modifier
-                    </button>
-                    <button
-                      onClick={() => handleDelete(category.id)}
-                      className="flex-1 px-3 py-2 text-sm font-semibold text-red-600 bg-red-50 rounded hover:bg-red-100 transition-colors"
-                    >
-                      🗑️ Supprimer
-                    </button>
-                  </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              )}
+            </>
           )}
         </main>
 

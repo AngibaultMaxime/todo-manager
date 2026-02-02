@@ -226,6 +226,18 @@ export default function TodosPage() {
             </div>
           ) : (
             <>
+              {/* Card + pour créer un nouveau todo (uniquement pour admin) */}
+              {isAdmin && (
+                <div
+                  onClick={() => setIsCreateModalOpen(true)}
+                  className="flex items-center justify-center cursor-pointer bg-white rounded-lg shadow-md border border-gray-200 p-6 mb-6 hover:bg-blue-50 hover:shadow-lg transition-all"
+                >
+                  <div className="text-4xl">➕</div>
+                  <p className="ml-4 font-semibold text-gray-700">
+                    Créer un nouveau todo
+                  </p>
+                </div>
+              )}
               <TodoList
                 todos={myTodos}
                 isAdmin={isAdmin}
